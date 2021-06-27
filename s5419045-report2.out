@@ -1,4 +1,10 @@
 \BOOKMARK [1][-]{section.1}{目的}{}% 1
 \BOOKMARK [1][-]{section.2}{理論説明}{}% 2
-\BOOKMARK [1][-]{section.3}{計算機実験}{}% 3
-\BOOKMARK [1][-]{section.4}{まとめ}{}% 4
+\BOOKMARK [2][-]{subsection.2.1}{分類学習について}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{決定木\(Decision tree\)}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{分割に用いる属性の選択基準}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{決定木構築手法}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.5}{枝刈りと汎化性能\(ロバスト性\)}{section.2}% 7
+\BOOKMARK [2][-]{subsection.2.6}{決定木の評価指標}{section.2}% 8
+\BOOKMARK [1][-]{section.3}{計算機実験}{}% 9
+\BOOKMARK [1][-]{section.4}{まとめ}{}% 10
