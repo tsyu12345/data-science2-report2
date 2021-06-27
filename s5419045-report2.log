@@ -1,4 +1,4 @@
-This is e-pTeX, Version 3.14159265-p3.8.2-190908-2.6 (utf8.euc) (TeX Live 2019/Debian) (preloaded format=platex 2021.5.19)  27 JUN 2021 19:56
+This is e-pTeX, Version 3.14159265-p3.8.2-190908-2.6 (utf8.euc) (TeX Live 2019/Debian) (preloaded format=platex 2021.5.19)  28 JUN 2021 02:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -595,24 +595,31 @@ LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
 
 (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [6]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 192.
- [7]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 192.
+) [6] [7] [8] [9] [10]
+File: HoldOut.PNG Graphic file (type bmp)
+<HoldOut.PNG>
+ [11]
+File: cross.PNG Graphic file (type bmp)
+<cross.PNG>
+ [12]
+[13]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 391.
+ [14]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 391.
  (./s5419045-report2.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 192.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 192.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 391.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 391.
 Package rerunfilecheck Info: File `s5419045-report2.out' has not changed.
-(rerunfilecheck)             Checksum: F7ED0534BE655927AA87D217AE834B52;654.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 192.
+(rerunfilecheck)             Checksum: 8C780ACA190D1E9B1DE9E6BBFB364F82;758.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 391.
  ) 
 Here is how much of TeX's memory you used:
- 7486 strings out of 482863
- 110443 string characters out of 5959218
- 373977 words of memory out of 5000000
- 22596 multiletter control sequences out of 15000+600000
+ 7498 strings out of 482863
+ 110633 string characters out of 5959218
+ 375051 words of memory out of 5000000
+ 22604 multiletter control sequences out of 15000+600000
  604524 words of font info for 121 fonts, out of 8000000 for 9000
  269 hyphenation exceptions out of 8191
- 37i,9n,29p,785b,394s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,10n,29p,785b,496s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on s5419045-report2.dvi (7 pages, 29792 bytes).
+Output written on s5419045-report2.dvi (14 pages, 54524 bytes).
