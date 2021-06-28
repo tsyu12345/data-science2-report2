@@ -436,11 +436,6 @@ $χ^{2}検定$では、期待値と、実際の観測度のズレを利用する
   \end{align*}
 \end{center}
 と計算される。
-
-
-
-
-
 \section{計算機実験}
 \subsection{実験準備}
   \subsubsection{実験環境}
@@ -513,11 +508,238 @@ $χ^{2}検定$では、期待値と、実際の観測度のズレを利用する
     変数名 <- rpart(type ~ 属性1 + 属性2...., zoo)
   \end{verbatim}
 \end{enumerate}
+なお、生成された決定木を評価するにあたってデータセットを学習用データと検証用データに分割する必要が生じる。今回は、単純な方法として「ホールドアウト法」を用いてデータを一定の割合で分割する。R言語では、事前にデータセットのデータを分割しなくてもR言語上でデータの分割が行える。
+\begin{center}
+  \begin{verbatim}
+  > dim(zoo.train)
+  [1] 80 17
+  > dim(zoo.test)
+  [1] 20 17
+  \end{verbatim}
+\end{center}
+上記の例では、zoo.csvの計100個のデータを、学習用データとして80個、検証用データとして20個に分割した。本実験ではこの割合で学習を行うこととする。
 \subsection{実験結果}
-今回は、まず全属性を利用した決定木構築、次に、属性「milk」と属性「egg」を利用した決定木構築を実験した。
+今回は、まず全属性を利用した決定木構築、次に、属性「milk」と属性「egg」を利用した決定木構築を実験した。最初に枝刈りや、分割属性の基準を設定せず(デフォルトで、ジニ係数よ利用、木の高さは30,ノードに含まれる最低数は20, コスト複雑度枝刈りのパラメタ$\alpha$の数値は0.01)に決定木構築を行いその性能を評価する。その次に枝刈りと分割属性の選択基準を変更したときの決定木の評価値を計算する。
+\subsubsection{デフォルトの設定における決定木構築}
+\paragraph{全属性利用の決定木}\par
+生成された決定木は下記の通り。学習用データ80個を使用して得られた決定木である。
+\begin{center}
+  \begin{verbatim}
+    > zoo.train.dt
+n= 80
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+ 1) root 80 44 mammal (0.025 0.2 0.12 0.075 0.087 0.45 0.037)
+   2) milk=false 44 28 bird (0.045 0.36 0.23 0.14 0.16 0 0.068)
+     4) feathers=true 16  0 bird (0 1 0 0 0 0 0) *
+     5) feathers=false 28 18 fish (0.071 0 0.36 0.21 0.25 0 0.11)
+      10) fins=true 10  0 fish (0 0 1 0 0 0 0) *
+      11) fins=false 18 11 invertebrate (0.11 0 0 0.33 0.39 0 0.17) *
+   3) milk=true 36  0 mammal (0 0 0 0 0 1 0) *
+  \end{verbatim}
+\end{center}
+またこのときの混同行列(分割表)は下記の通り。
+\begin{verbatim}
+                zoo.test.predict
+                amphibian bird fish insect invertebrate mammal reptile
+amphibian            0    0    0      0            1      0       0
+bird                 0    4    0      0            0      0       0
+fish                 0    0    3      0            0      0       0
+insect               0    0    0      0            2      0       0
+invertebrate         0    0    0      0            3      0       0
+mammal               0    0    0      0            0      5       0
+reptile              0    0    0      0            2      0       0
+\end{verbatim}
+このときの精度は計算すると、
+\begin{center}
+  \begin{align*}
+    \frac{実際の値と予測値が合致したデータ数}{テストデータ数} = \frac{15}{20} \\
+    = \frac{3}{4} = 0.75
+  \end{align*}
+\end{center}
+また$χ^{2}検定を行ったときの結果は下記の通り$。
+\begin{verbatim}
+  > chisq.test(result1)
+
+	Pearson's Chi-squared test
+
+data:  result1
+X-squared = NaN, df = 36, p-value = NA
+
+ 警告メッセージ:
+ chisq.test(result1) で:   カイ自乗近似は不正確かもしれません
+\end{verbatim}
+\paragraph{属性「milk」と属性「egg」を利用した決定木}\par
+上記と同様に、属性「milk」と属性「egg」を利用した決定木についても結果を示す。\par
+決定木は下記の通り。
+\begin{verbatim}
+  > zoo.train.milk_eggs.dt
+n= 80
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+1) root 80 44 mammal (0.025 0.2 0.12 0.075 0.087 0.45 0.037)
+  2) milk=false 44 28 bird (0.045 0.36 0.23 0.14 0.16 0 0.068) *
+  3) milk=true 36  0 mammal (0 0 0 0 0 1 0) *
+\end{verbatim}
+また、混同行列は下記の通り。
+\begin{verbatim}
+              zoo.test.milk_eggs.predict
+              amphibian bird fish insect invertebrate mammal reptile
+amphibian            0    1    0      0            0      0       0
+bird                 0    4    0      0            0      0       0
+fish                 0    3    0      0            0      0       0
+insect               0    2    0      0            0      0       0
+invertebrate         0    3    0      0            0      0       0
+mammal               0    0    0      0            0      5       0
+reptile              0    2    0      0            0      0       0
+
+\end{verbatim}
+このときの精度は、
+\begin{center}
+  \begin{align*}
+    \frac{9}{20} = 0.45
+  \end{align*}
+\end{center}
+$χ^{2}検定を行ったときの結果は下記の通り。$
+\begin{verbatim}
+  > chisq.test(result2)
+
+	Pearson's Chi-squared test
+
+data:  result2
+X-squared = NaN, df = 36, p-value = NA
+
+ 警告メッセージ:
+ chisq.test(result2) で:   カイ自乗近似は不正確かもしれません
+\end{verbatim}
+\subsubsection{分割属性の選択基準と枝帰りのパラメータを変更したときの決定木}
+次に、分割テストで使用する属性の選択を、ジニ係数を基準とし、木の高さ上限を4、ノードに含まれる最低数を15、コスト複雑度枝刈りのパラメタ$\alpha$を0.03とした場合の決定木構築実験の結果を示す。
+\paragraph{全属性使用の決定木}
+得られた決定木は下記。
+\begin{verbatim}
+  n= 80
+
+  node), split, n, loss, yval, (yprob)
+        * denotes terminal node
+
+   1) root 80 44 mammal (0.025 0.2 0.12 0.075 0.087 0.45 0.037)
+     2) milk=false 44 28 bird (0.045 0.36 0.23 0.14 0.16 0 0.068)
+       4) feathers=true 16  0 bird (0 1 0 0 0 0 0) *
+       5) feathers=false 28 18 fish (0.071 0 0.36 0.21 0.25 0 0.11)
+        10) fins=true 10  0 fish (0 0 1 0 0 0 0) *
+        11) fins=false 18 11 invertebrate (0.11 0 0 0.33 0.39 0 0.17)
+          22) airborne=true 5  0 insect (0 0 0 1 0 0 0) *
+          23) airborne=false 13  6 invertebrate (0.15 0 0 0.077 0.54 0 0.23) *
+     3) milk=true 36  0 mammal (0 0 0 0 0 1 0) *
+
+\end{verbatim}
+混同行列は、
+\begin{verbatim}
+               zoo.test.predict
+              amphibian bird fish insect invertebrate mammal reptile
+amphibian            0    0    0      0            1      0       0
+bird                 0    4    0      0            0      0       0
+fish                 0    0    3      0            0      0       0
+insect               0    0    0      1            1      0       0
+invertebrate         0    0    0      0            3      0       0
+mammal               0    0    0      0            0      5       0
+reptile              0    0    0      0            2      0       0
+\end{verbatim}
+精度を計算すると、
+\begin{center}
+  \begin{align*}
+    \frac{16}{20} = \frac{4}{5} = 0.8
+  \end{align*}
+\end{center}
+$χ^{2}検定を行ったときの結果は下記の通り。$
+\begin{verbatim}
+  > chisq.test(result3)
+
+	Pearson's Chi-squared test
+
+data:  result3
+X-squared = NaN, df = 36, p-value = NA
+
+ 警告メッセージ:
+ chisq.test(result3) で:   カイ自乗近似は不正確かもしれません
+\end{verbatim}
+\paragraph{属性「milk」と属性「egg」を利用した決定木}\par
+得られた決定木は下記。
+\begin{verbatim}
+  n= 80
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+1) root 80 44 mammal (0.025 0.2 0.12 0.075 0.087 0.45 0.037)
+  2) milk=false 44 28 bird (0.045 0.36 0.23 0.14 0.16 0 0.068) *
+  3) milk=true 36  0 mammal (0 0 0 0 0 1 0) *
+\end{verbatim}
+混同行列は下記の通り。
+\begin{verbatim}
+                zoo.test.milk_eggs.predict
+              amphibian bird fish insect invertebrate mammal reptile
+amphibian            0    1    0      0            0      0       0
+bird                 0    4    0      0            0      0       0
+fish                 0    3    0      0            0      0       0
+insect               0    2    0      0            0      0       0
+invertebrate         0    3    0      0            0      0       0
+mammal               0    0    0      0            0      5       0
+reptile              0    2    0      0            0      0       0
+\end{verbatim}
+精度は、
+\begin{center}
+  \begin{align*}
+    \frac{9}{20} = 0.45
+  \end{align*}
+\end{center}
+$χ^{2}検定を行ったときの結果は下記の通り。$
+\begin{verbatim}
+  　　　　　　　　　zoo.test.milk_eggs.predict
+  　　　　　　　　amphibian bird fish insect invertebrate mammal reptile
+amphibian            0    1    0      0            0      0       0
+bird                 0    4    0      0            0      0       0
+fish                 0    3    0      0            0      0       0
+insect               0    2    0      0            0      0       0
+invertebrate         0    3    0      0            0      0       0
+mammal               0    0    0      0            0      5       0
+reptile              0    2    0      0            0      0       0
+\end{verbatim}
 \subsection{結果の説明}
+まずはじめに、全実験において$χ^{2}検定$の計算結果(p-value)の値が正しく算出されなかった。\par
+デフォルトの設定値における決定木構築の結果から見ていく。全属性を利用した決定木の精度を得られた混同行列から計算すると、0.75という結果になった。また属性「milk」と属性「egg」を利用した決定木の精度は、0.45となった。\par
+次に、分割属性の選択基準と枝帰りのパラメータを変更したときの決定木構築の結果を見ていく。此の場合の全属性を利用した決定木の精度は、0.8となった。また、属性「milk」と属性「egg」を利用した決定木の精度は、0.45となり、デフォルトの設定時の時と同一になった。\par
+なお、全体を通してクラス’mammal’の分類は比較的どの決定木でも正確に分類できていることが混同行列から伺える。
 \section{考察}
+まず、$χ^{2}検定$の結果であるが、全実験において正しく算出することができなかった。原因は混同行列を見れば明らかである。予測されたクラスが0回のクラス(例：amphibianやreptile)が存在していることが原因である。これは、$χ^{2}検定$の計算過程において、0除算が発生していることを示しており、これが原因で$χ^{2}検定$が正しく行えなかった。$χ^{2}検定$が正しく行えないということは、「学習データ集合と検証用データ集合の作り方が不適切である」ということになる。したがって、ホールドアウト法ではなく交差検証法を用いて、検証用データ集合を入れ替えれば正しく算出できたかもしれない。\par
+また、各実験における精度だが、これは使用する属性値や、枝刈りの設定値によって異なることが確認された。これは、決定木の性質上当然のことであろう。なお、全体を通して、全属性を利用する決定木の方が、属性「milk」と属性「eggs」を利用した決定木の精度に比べおよそ2倍程度高い結果となった。これは、このデータセットにおいては、少ない属性のみで決定木を構築するよりも、できるだけ多くの属性を利用した方が決定木の精度が上がったこと示していると考えられる。ただし、今回使用したデータセットは属性数が17であったからこの様な結果になっていると考えられ、使用する属性値が多すぎると木が複雑になり、過学習の原因になる。過学習を起こすと一般に学習データに対してのみ精度が高く出るが、未知データに関しては精度が非常に低くなる傾向があるからだ。\par
+今回の実験では、データセットを学習データ集合とテストデータ集合に分割する方法としてホールドアウト法を使用したが、ホールドアウト法による検証は前項で述べたとおりの欠点を含んでいる。したがって、今回精度が比較的高かった決定木も、交差検証法を使用した場合では精度が大きく変化することが考えられる。\par
+また、枝刈りにはコスト削減枝刈りを使用したが、パラメータ$\alpha$の値をデフォルトの0.01から0.03に変更した結果、分類木の精度が多少向上する決定木が現れた。これは、枝刈りをより多く行ったことによる、汎化性能の向上が起こったと考えられる。\par
+余談だが、前項で汎化性能を高めるために枝刈りを行う、と説明した。では枝刈りを全く行わなかった場合、精度はどうなるだろうか。R言語では、決定木構築の際オプション引数として、$control = rpart.control( パラメタ名 = 値のリスト )$に指定するパラメータを$cp=0$にすると、枝刈りが全く行われない。これを、全属性を利用する決定木で行ったときの精度調べると、
+\begin{verbatim}
+              zoo.test.predict
+              amphibian bird fish insect invertebrate mammal reptile
+amphibian            0    0    0      0            1      0       0
+bird                 0    4    0      0            0      0       0
+fish                 0    0    3      0            0      0       0
+insect               0    0    0      0            2      0       0
+invertebrate         0    0    0      0            3      0       0
+mammal               0    0    0      0            0      5       0
+reptile              0    0    0      0            2      0       0
+\end{verbatim}
+より、
+\begin{center}
+  \begin{align*}
+    \frac{15}{20} = \frac{3}{4} = 0.75
+  \end{align*}
+\end{center}
+となり、デフォルトの設定値の時とは大差がなく、$\alpha$の値を0.03にした時よりも劣っていた。
 \section{まとめ}
+今回は、配布データzoo.csvに対してR言語を用いた決定木構築実験を行った。結果は、精度のみで見ると、全属性を使用し、枝刈り率を0.03にした決定木の精度が一番良い結果となって。しかし、全実験において、$χ^{2}検定$の結果が正しく算出されなかったため、決定木の信頼性を統計的に考察することができなかった。
 \begin{thebibliography}{99}
   \bibitem {amari01} 甘利俊一、『情報理論』、ちくま文庫、2011年4月10日
 \end{thebibliography}
