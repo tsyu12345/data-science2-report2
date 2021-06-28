@@ -403,6 +403,31 @@ $χ^{2}検定$では、期待値と、実際の観測度のズレを利用する
 \end{itemize}
 先程の混同行列を次のように書き換える。
 %表をここに。
+\begin{table}[H]
+  \begin{center}
+    \caption{観測値}
+    \begin{tabular}{|l|l|l|l|} \hline
+      $R_{p}$／$R_{a}$ & 0 & 1 & 計 \\ \hline
+      0 & $x_{00}$ & $x_{01}$　& $n_{0}$\\ \hline
+      1　& $x_{10}$ & $x_{11}$ & $n_{1}$\\ \hline
+      計 & $m_{0}$ & $m_{1}$ & $N$ \\\hline
+    \end{tabular}
+    \label{hyo03}
+  \end{center}
+\end{table}
+\begin{table}[H]
+  \begin{center}
+    \caption{期待値}
+    \begin{tabular}{|l|l|l|l|} \hline
+      $R_{p}$／$R_{a}$ & 0 & 1 & 計 \\ \hline
+      0 & $\frac{n_{0}m_{0}}{N}$ & $\frac{n_{0}m_{1}}{N}$　& $n_{0}$\\ \hline
+      1　& $\frac{n_{1}m_{0}}{N}$ & $\frac{n_{1}m_{1}}{N}$ & $n_{1}$\\ \hline
+      計 & $m_{0}$ & $m_{1}$ & $N$ \\\hline
+    \end{tabular}
+    \label{hyo03}
+  \end{center}
+\end{table}
+
 このとき、検定統計量、すなわち$χ^{2}値$は、
 \begin{center}
   \begin{align*}
@@ -429,8 +454,68 @@ $χ^{2}検定$では、期待値と、実際の観測度のズレを利用する
     \item 仮想RAM：4GB
   \end{itemize}
 \subsubsection{実験データ}
-\subsubsection{実験結果}
-\subsubsection{結果の説明}
+今回の実験では、学科教材ページにて配布されたzoo.csvを使用する。本データは、\url{http://archive.ics.uci.edu/ml/datasets/zoo}から入手したものを一部加工したデータである。本データは、動物の分類に関するデータである。
+\begin{itemize}
+  \item 総データ数：100
+  \item 属性数：17
+  \item クラス数(属性typeの値)：8(amphibian( 両生類 ), bird( 鳥類 ), fish( 魚類 ), insect( 昆虫 ), invertebrate( 無脊椎動物 ), mammal( 哺乳類 ), reptile( 爬虫類 ))
+  \item 形式：csvファイル
+\end{itemize}
+下記に、各属性の基本統計量(五数要約)を示す。
+\begin{center}
+  \begin{verbatim}
+    > summary(zoo)
+    hair     feathers     eggs       milk     airborne   aquatic    predator
+ false:57   false:80   false:42   false:59   false:76   false:65   false:45
+ true :43   true :20   true :58   true :41   true :24   true :35   true :55
+
+
+
+
+
+  toothed    backbone   breathes   venomous     fins         legs
+ false:40   false:18   false:21   false:92   false:83   Min.   :0.00
+ true :60   true :82   true :79   true : 8   true :17   1st Qu.:2.00
+                                                        Median :3.00
+                                                        Mean   :2.83
+                                                        3rd Qu.:4.00
+                                                        Max.   :8.00
+
+    tail     domestic   catsize             type
+ false:25   false:87   false:56   amphibian   : 3
+ true :75   true :13   true :44   bird        :20
+                                  fish        :13
+                                  insect      : 8
+                                  invertebrate:10
+                                  mammal      :41
+                                  reptile     : 5
+
+  \end{verbatim}
+\end{center}
+
+\subsubsection{R言語における決定木構築法}
+本実験ではR言語を使用して決定木構築を行った。R言語で決定木構築を行うには、ライブラリrpartを読み込む必要がある。以下、決定木構築の手順を示す。
+\begin{enumerate}
+  \item libraryコマンドを使用して、rpartライブラリを読み込む。
+  \begin{verbatim}
+    library(rpart)
+  \end{verbatim}
+  \item 実験に必要なデータセット(今回はzoo.csv)を読み込む。
+  \begin{verbatim}
+    zoo <- read.csv("zoo.csv", strip.white=TRUE, row.name=1)
+  \end{verbatim}
+  \item 決定木構築を行うには下記のコマンドを入力する。※決定木を代入する変数名を例として’zoo.dt’とし、使用する属性は全属性とする。
+  \begin{verbatim}
+    zoo.dt <- rpart(type ~ . , zoo)
+  \end{verbatim}
+  \item 属性を絞りたい場合は下記のようにする。
+  \begin{verbatim}
+    変数名 <- rpart(type ~ 属性1 + 属性2...., zoo)
+  \end{verbatim}
+\end{enumerate}
+\subsection{実験結果}
+今回は、まず全属性を利用した決定木構築、次に、属性「milk」と属性「egg」を利用した決定木構築を実験した。
+\subsection{結果の説明}
 \section{考察}
 \section{まとめ}
 \begin{thebibliography}{99}
